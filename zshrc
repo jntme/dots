@@ -36,6 +36,13 @@ antigen bundle zsh-users/zsh-autosuggestions
 # "git shorthand
 antigen bundle git
 
+antigen bundle brew 
+antigen bundle osx 
+antigen bundle vi-mode 
+antigen bundle z
+antigen bundle battery
+antigen bundle common-aliases
+
 #aliases
 alias vim="nvim"
 

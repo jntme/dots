@@ -1692,7 +1692,7 @@
 	<key>HotkeyCode</key>
 	<integer>49</integer>
 	<key>HotkeyModifiers</key>
-	<integer>524288</integer>
+	<integer>1310985</integer>
 	<key>IRMemory</key>
 	<integer>4</integer>
 	<key>JobName</key>
@@ -1764,11 +1764,11 @@
 	<key>NSWindow Frame SessionsPreferences</key>
 	<string>269 139 606 456 0 0 1280 800 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>0 122 796 473 0 0 1280 800 </string>
+	<string>0 130 937 465 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
 	<string>1 6 1277 769 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>640 398 570 377 0 0 1280 777 </string>
+	<string>640 421 570 377 0 0 1280 800 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
 	<string>322 415 570 377 0 0 1280 800 </string>
 	<key>NSWindow Frame iTerm Window 3</key>
@@ -3285,6 +3285,10 @@
 	<string>C1B21C53-2C39-46A2-BF91-9EC71C36912B</string>
 	<key>NoSyncLastTipTime</key>
 	<real>499510989.67103899</real>
+	<key>NoSyncNeverRemindPrefsChangesLostForFile</key>
+	<true/>
+	<key>NoSyncNeverRemindPrefsChangesLostForFile_selection</key>
+	<integer>0</integer>
 	<key>NoSyncPermissionToShowTip</key>
 	<true/>
 	<key>NoSyncSuppressAnnyoingBellOffer</key>

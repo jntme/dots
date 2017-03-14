@@ -95,7 +95,7 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'w0rp/ale' "async linting
   Plug 'justinmk/vim-sneak' "sneaking in code
   Plug 'chriskempson/base16-vim' "colors in vim
-  Plug 'christoomey/vim-tmux-navigator' "tmux integration
+  Plug 'christoomey/vim-tmux-navieator' "tmux intesration
 call plug#end()
 
 
@@ -125,3 +125,11 @@ map ~ :VimFilerCurrentDir -explorer -find<CR>
 let g:deoplete#enable_at_startup = 1
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
 
+"vim-sneak
+let g:sneak#s_next = 1
+nmap f <Plug>Sneak_f
+nmap F <Plug>Sneak_F
+xmap f <Plug>Sneak_f
+xmap F <Plug>Sneak_F
+omap f <Plug>Sneak_f
+omap F <Plug>Sneak_F
