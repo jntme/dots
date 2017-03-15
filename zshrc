@@ -40,27 +40,32 @@ antigen bundle zsh-users/zsh-autosuggestions
 # "git shorthand
 antigen bundle git
 
-antigen bundle osx 
 antigen bundle vi-mode 
 antigen bundle rupa/z
-antigen bundle battery
 antigen bundle common-aliases
 antigen bundle colored-man-paged
 
-# OS specific plugins
-if [[ $CURRENT_OS == 'OS X' ]]; then
-    antigen bundle brew
-    antigen bundle brew-cask
-    antigen bundle gem
-    antigen bundle osx
-elif [[ $CURRENT_OS == 'Linux' ]]; then
-    # None so far...
 
-    if [[ $DISTRO == 'CentOS' ]]; then
-        antigen bundle centos
-    fi
-elif [[ $CURRENT_OS == 'Cygwin' ]]; then
-    antigen bundle cygwin
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        # ...
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+      # Mac OSX
+      antigen bundle brew
+      antigen bundle brew-cask
+      antigen bundle gem
+      antigen bundle osx
+      antigen bundle battery
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+        # POSIX compatibility layer and Linux environment emulation for Windows
+        antigen bundle cygwin
+elif [[ "$OSTYPE" == "msys" ]]; then
+        # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+elif [[ "$OSTYPE" == "win32" ]]; then
+        # I'm not sure this can happen.
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+        # ...
+else
+        # Unknown.
 fi
 
 #aliases
