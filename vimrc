@@ -7,8 +7,8 @@ set nomodeline
 
 " Stop word wrapping
 set nowrap
-  " Except... on Markdown. That's good stuff.
-  autocmd FileType markdown setlocal wrap
+" Except... on Markdown. That's good stuff.
+autocmd FileType markdown setlocal wrap
 
 " Adjust system undo levels
 set undolevels=100
@@ -58,7 +58,7 @@ nnoremap <C-e> 3<C-e>
 nnoremap <C-y> 3<C-y>
 
 if has('mouse')
-    set mouse=a
+  set mouse=a
 endif
 
 "set Leader
@@ -115,19 +115,22 @@ imap <right> <nop>
 
 
 call plug#begin('~/.local/share/nvim/plugged')
-  Plug 'Shougo/unite.vim' "makes vim behave like normal ui
-  Plug 'Yggdroot/indentLine' "makes intendation possible
-  Plug 'airblade/vim-gitgutter'	"git gutter
-  Plug 'vim-airline/vim-airline'
-  Plug 'vim-airline/vim-airline-themes'	
-  Plug 'ctrlpvim/ctrlp.vim', { 'on': 'CtrlP' } "fuzzy finder
-  Plug 'mhinz/vim-grepper' "find in files
-  Plug 'Shougo/vimfiler.vim', { 'on': 'VimFiler' } "file tree view
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'w0rp/ale' "async linting
-  Plug 'justinmk/vim-sneak' "sneaking in code
-  Plug 'chriskempson/base16-vim' "colors in vim
-  Plug 'christoomey/vim-tmux-navigator' "tmux integration
+Plug 'Shougo/unite.vim' "makes vim behave like normal ui
+Plug 'Yggdroot/indentLine' "makes intendation possible
+Plug 'airblade/vim-gitgutter' "git gutter
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'ctrlpvim/ctrlp.vim', { 'on': 'CtrlP' } "fuzzy finder
+Plug 'mhinz/vim-grepper' "find in files
+Plug 'Shougo/vimfiler.vim', { 'on': 'VimFiler' } "file tree view
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'w0rp/ale' "async linting
+Plug 'justinmk/vim-sneak' "sneaking in code
+Plug 'chriskempson/base16-vim' "colors in vim
+Plug 'christoomey/vim-tmux-navigator' "tmux integration
+Plug 'Chiel92/vim-autoformat' " turn on autoformat
+
+Plug 'leafgarland/typescript-vim' "insert typescript support
 call plug#end()
 
 "Plug 'chriskempson/base16-vim' " colorschemes
