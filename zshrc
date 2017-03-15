@@ -1,3 +1,4 @@
+
 autoload colors zsh/terminfo
 colors
 
@@ -27,6 +28,9 @@ if [[ ! -f ~/.antigen.zsh ]]; then
 fi
 source ~/.antigen.zsh
 
+#normal oh-my-zsh
+#antigen use oh-my-zsh
+
 # "highlighting on command line
 antigen bundle zsh-users/zsh-syntax-highlighting
 
@@ -36,15 +40,38 @@ antigen bundle zsh-users/zsh-autosuggestions
 # "git shorthand
 antigen bundle git
 
-antigen bundle brew 
 antigen bundle osx 
 antigen bundle vi-mode 
-antigen bundle z
+antigen bundle rupa/z
 antigen bundle battery
 antigen bundle common-aliases
+antigen bundle colored-man-paged
+
+# OS specific plugins
+if [[ $CURRENT_OS == 'OS X' ]]; then
+    antigen bundle brew
+    antigen bundle brew-cask
+    antigen bundle gem
+    antigen bundle osx
+elif [[ $CURRENT_OS == 'Linux' ]]; then
+    # None so far...
+
+    if [[ $DISTRO == 'CentOS' ]]; then
+        antigen bundle centos
+    fi
+elif [[ $CURRENT_OS == 'Cygwin' ]]; then
+    antigen bundle cygwin
+fi
 
 #aliases
 alias vim="nvim"
+alias cpwd="pwd | pbpaste"
+
+
+
+alias study="cd '/Users/jnt/Dropbox/01-Berner Fachhochschule/05-Fruhlingssemester 2017'";
+
+
 
 
 

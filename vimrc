@@ -29,6 +29,11 @@ set noerrorbells
 " Number gutter
 set number
 
+set wrap "turn on line wrapping
+set wrapmargin=8 " wrap lines when coming within n characters from side
+set linebreak " set soft wrapping
+set showbreak=… " show ellipsis at breaking
+
 " Use search highlighting
 set hlsearch
 
@@ -36,6 +41,25 @@ set hlsearch
 set scrolloff=1
 set sidescrolloff=5
 
+set listchars=tab:▸\ ,eol:¬,trail:⋅,extends:❯,precedes:❮
+
+" clear highlighted search
+noremap <space> :set hlsearch! hlsearch?<cr>
+
+"split the right way
+map <leader>\| :vs<cr>
+map <leader>- :sp<cr>
+
+" switch between current and last buffer
+nmap <leader>. <c-^>
+
+" scroll the viewport faster
+nnoremap <C-e> 3<C-e>
+nnoremap <C-y> 3<C-y>
+
+if has('mouse')
+    set mouse=a
+endif
 
 "set Leader
 let mapleader=","
@@ -49,6 +73,9 @@ nnoremap <Leader><Leader> :w<CR>
 
 " remap esc
 inoremap jj <esc>
+
+"disable Ex mode
+noremap Q <NOP>"
 
 nmap <leader>q :q<cr>
 "quit current window
@@ -65,6 +92,11 @@ map <leader>ez :e! ~/.zshrc<cr>
 map <leader>eg :e! ~/.gitconfig<cr>
 " edit tmux config
 map <leader>et :e! ~/.tmux.conf<cr>
+
+map <silent> <C-h> :wincmd h<cr>
+map <silent> <C-j> :wincmd j<cr>
+map <silent> <C-k> :wincmd k<cr>
+map <silent> <C-l> :wincmd l<cr>
 
 "------------set to my own config----------------
 "
@@ -95,13 +127,18 @@ call plug#begin('~/.local/share/nvim/plugged')
   Plug 'w0rp/ale' "async linting
   Plug 'justinmk/vim-sneak' "sneaking in code
   Plug 'chriskempson/base16-vim' "colors in vim
-  Plug 'christoomey/vim-tmux-navieator' "tmux intesration
+  Plug 'christoomey/vim-tmux-navigator' "tmux integration
 call plug#end()
 
+"Plug 'chriskempson/base16-vim' " colorschemes
+if filereadable(expand("~/.vimrc_background"))
+  let base16colorspace=256
+  source ~/.vimrc_background
+endif
 
 "indentLine
 let g:indentLine_enabled = 1
-let g:indentLine_char = "⟩"
+"let g:indentLine_char = "❯"
 
 "airline
 let g:airline#extensions#tabline#enabled=1
@@ -133,3 +170,6 @@ xmap f <Plug>Sneak_f
 xmap F <Plug>Sneak_F
 omap f <Plug>Sneak_f
 omap F <Plug>Sneak_F
+
+"tmux-navieator
+nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
