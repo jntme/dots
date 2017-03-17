@@ -46,6 +46,7 @@ antigen bundle vi-mode
 antigen bundle rupa/z
 antigen bundle common-aliases
 antigen bundle colored-man-paged
+antigen bundle olivierverdier/zsh-git-prompt
 
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then

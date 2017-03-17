@@ -85,7 +85,7 @@ nmap <leader>Q :qa!<cr>
 vnoremap <leader>s :sort<cr>
 
 " edit ~/.vimrc
-map <leader>ev :e! ~/.dots/nvimrc.link<cr>
+map <leader>ev :e! ~/.dots/vimrc<cr>
 " edit ~/.zshrc
 map <leader>ez :e! ~/.zshrc<cr>
 " edit gitconfig
@@ -129,8 +129,21 @@ Plug 'justinmk/vim-sneak' "sneaking in code
 Plug 'chriskempson/base16-vim' "colors in vim
 Plug 'christoomey/vim-tmux-navigator' "tmux integration
 Plug 'Chiel92/vim-autoformat' " turn on autoformat
-
+Plug 'tpope/vim-surround' " surrounding 
+Plug 'mattn/emmet-vim' "emmet makes html easy
+"Plug 'vim-syntastic/syntastic' "syntax highlighting for a lot of languages
+"syntastic inteferes with ale...
+Plug 'scrooloose/nerdcommenter' "makes multi line commenting possible
+Plug 'scrooloose/nerdtree' "finder in vim
+Plug 'jistr/vim-nerdtree-tabs' "allows to have only one tree and multiple tabs
+Plug 'othree/javascript-libraries-syntax.vim' "javascript hotness :)
 Plug 'leafgarland/typescript-vim' "insert typescript support
+Plug 'matthewsimo/angular-vim-snippets' "snippets for angular
+Plug 'pangloss/vim-javascript'
+Plug 'othree/html5.vim'
+Plug 'shawncplus/phpcomplete.vim'
+
+
 call plug#end()
 
 "Plug 'chriskempson/base16-vim' " colorschemes
@@ -158,8 +171,8 @@ nnoremap <Leader>fp :Grepper<Space>-query<Space>
 nnoremap <Leader>fb :Grepper<Space>-buffers<Space>-query<Space>-<Space>
 
 "vimfiler
-map ` :VimFiler -explorer<CR>
-map ~ :VimFilerCurrentDir -explorer -find<CR>
+"map ` :VimFiler -explorer<CR>
+"map ~ :VimFilerCurrentDir -explorer -find<CR>
 
 "deoplete
 let g:deoplete#enable_at_startup = 1
@@ -176,3 +189,39 @@ omap F <Plug>Sneak_F
 
 "tmux-navieator
 nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
+
+"emmet
+let g:user_emmet_leader_key='<C-space>'
+
+"syntastic
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+" map fuzzyfinder (CtrlP) plugin
+let g:ctrlp_map='<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+let g:ctrlp_dotfiles=1
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_user_command = 'find %s -type f' " MacOSX/Linux
+
+"NERDTree settings
+" close NERDTree after a file is opened
+let g:NERDTreeQuitOnOpen=0
+" show hidden files in NERDTree
+let NERDTreeShowHidden=1
+" Toggle NERDTree
+map <Leader>k <plug>NERDTreeTabsToggle<CR>
+let g:NERDTreeWinPos = "right"
+
+"ale 
+
+let g:ale_linters = {
+\   'javascript': ['jslint'],
+\}
