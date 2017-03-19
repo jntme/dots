@@ -28,22 +28,6 @@ set noerrorbells
 
 " Number gutter
 set number
-
-set wrap "turn on line wrapping
-set wrapmargin=8 " wrap lines when coming within n characters from side
-set linebreak " set soft wrapping
-set showbreak=… " show ellipsis at breaking
-
-" Use search highlighting
-set hlsearch
-
-" Space above/beside cursor from screen edges
-set scrolloff=1
-set sidescrolloff=5
-
-set listchars=tab:▸\ ,eol:¬,trail:⋅,extends:❯,precedes:❮
-
-" clear highlighted search
 noremap <space> :set hlsearch! hlsearch?<cr>
 
 "split the right way
@@ -51,11 +35,18 @@ map <leader>\| :vs<cr>
 map <leader>- :sp<cr>
 
 " switch between current and last buffer
-nmap <leader>. <c-^>
+nmap <leader>b <c-^>
 
 " scroll the viewport faster
 nnoremap <C-e> 3<C-e>
 nnoremap <C-y> 3<C-y>
+
+"set no swapfiles
+set noswapfile
+
+"move around in a help file with a german keyboard
+nnoremap ä <C-]> 
+nnoremap ü <C-O> 
 
 if has('mouse')
   set mouse=a
@@ -115,7 +106,7 @@ imap <right> <nop>
 
 
 call plug#begin('~/.local/share/nvim/plugged')
-Plug 'Shougo/unite.vim' "makes vim behave like normal ui
+Plug 'Shougo/denite.nvim' "makes vim behave like normal ui
 Plug 'Yggdroot/indentLine' "makes intendation possible
 Plug 'airblade/vim-gitgutter' "git gutter
 Plug 'vim-airline/vim-airline'
@@ -140,8 +131,6 @@ Plug 'othree/javascript-libraries-syntax.vim' "javascript hotness :)
 Plug 'leafgarland/typescript-vim' "insert typescript support
 Plug 'matthewsimo/angular-vim-snippets' "snippets for angular
 Plug 'pangloss/vim-javascript'
-Plug 'othree/html5.vim'
-Plug 'shawncplus/phpcomplete.vim'
 
 
 call plug#end()
@@ -193,23 +182,12 @@ nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
 "emmet
 let g:user_emmet_leader_key='<C-space>'
 
-"syntastic
-
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-
 " map fuzzyfinder (CtrlP) plugin
-let g:ctrlp_map='<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
-let g:ctrlp_dotfiles=1
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_user_command = 'find %s -type f' " MacOSX/Linux
+"let g:ctrlp_map='<c-p>'
+"et g:ctrlp_cmd = 'CtrlP'
+"let g:ctrlp_dotfiles=1
+"let g:ctrlp_working_path_mode = 'ra'
+"let g:ctrlp_user_command = 'find %s -type f' " MacOSX/Linux
 
 "NERDTree settings
 " close NERDTree after a file is opened
@@ -224,4 +202,5 @@ let g:NERDTreeWinPos = "right"
 
 let g:ale_linters = {
 \   'javascript': ['jslint'],
+\   'html': ['htmlhint'],
 \}
