@@ -31,7 +31,8 @@ fi
 source ~/.antigen.zsh
 
 #normal oh-my-zsh
-#antigen use oh-my-zsh
+antigen use oh-my-zsh
+antigen theme pmcgee
 
 # "highlighting on command line
 antigen bundle zsh-users/zsh-syntax-highlighting
@@ -46,6 +47,7 @@ antigen bundle rupa/z
 antigen bundle common-aliases
 antigen bundle colored-man-paged
 antigen bundle olivierverdier/zsh-git-prompt
+
 
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
