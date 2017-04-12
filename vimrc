@@ -131,7 +131,7 @@ Plug 'othree/javascript-libraries-syntax.vim' "javascript hotness :)
 Plug 'leafgarland/typescript-vim' "insert typescript support
 Plug 'matthewsimo/angular-vim-snippets' "snippets for angular
 Plug 'pangloss/vim-javascript'
-
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
 call plug#end()
 
@@ -183,11 +183,11 @@ nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
 let g:user_emmet_leader_key='<C-space>'
 
 " map fuzzyfinder (CtrlP) plugin
-"let g:ctrlp_map='<c-p>'
-"et g:ctrlp_cmd = 'CtrlP'
-"let g:ctrlp_dotfiles=1
-"let g:ctrlp_working_path_mode = 'ra'
-"let g:ctrlp_user_command = 'find %s -type f' " MacOSX/Linux
+let g:ctrlp_map='<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+let g:ctrlp_dotfiles=1
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_user_command = 'find %s -type f' " MacOSX/Linux
 
 "NERDTree settings
 " close NERDTree after a file is opened

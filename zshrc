@@ -9,7 +9,6 @@ RPS1="%{$fg[magenta]%}%20<...<%~%<<%{$reset_color%}"
 
 # if tmux is installed, run it
 if [ "$TMUX" = "" ]; then
-  new-session -n $HOST
   tmux attach
 fi
 
@@ -73,7 +72,7 @@ fi
 
 #aliases
 alias vim="nvim"
-alias cpwd="pwd | pbpaste"
+alias cpwd="pwd | pbcopy"
 
 alias grep='grep --color=auto'
 
@@ -84,5 +83,9 @@ alias slp="pmset sleepnow"
 #reload zsh config
 alias reload!='source ~/.zshrc'
 
-BASE16_SHELL=$DOTFILES/themes/base16-shell/
-[ -n "$PS1" ] && [ -s $BASE16_SHELL/profile_helper.sh ] && eval "$($BASE16_SHELL/profile_helper.sh)"
+alias ls="ls -G"
+alias ll="ll -G"
+
+alias vsc="open -a Visual\ Studio\ Code ."
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
