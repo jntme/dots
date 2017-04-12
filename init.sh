@@ -23,4 +23,8 @@ ln -s ~/.dots/tmux.conf ~/.tmux.conf
 ln -s ~/.dots/vimrc ~/.config/nvim/init.vim
 
 
+#show hidden files in finder
+defaults write com.apple.finder AppleShowAllFiles YES
+
+
 # inspiration from http://wrotenwrites.com/a_modern_terminal_workflow_1/
