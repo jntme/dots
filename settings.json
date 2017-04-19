@@ -1,0 +1,52 @@
+// Place your settings in this file to overwrite the default settings
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/*.js.map": true,
+        "**/*.js": {
+            "when": "$(basename).ts"
+        }
+    },
+    "vim.easymotion": true,
+    "vim.incsearch": true,
+    "vim.useSystemClipboard": true,
+    "vim.useCtrlKeys": true,
+    "vim.hlsearch": true,
+    "vim.insertModeKeyBindings": [{
+        "before": ["j", "j"],
+        "after": ["<Esc>"]
+    }],
+    "vim.leader": ",",
+    "vim.otherModesKeyBindingsNonRecursive": [{
+            "before": ["leader", "leader"],
+            "after": [],
+            "commands": [{
+                "command": "workbench.action.files.save",
+                "args": []
+            }]
+        },
+        {
+            "before": ["leader", "q"],
+            "after": [],
+            "commands": [{
+                    "command": "workbench.action.closeActiveEditor",
+                    "args": []
+                }
+
+            ]
+        },
+        {
+            "before": ["leader", "c", "i"],
+            "after": [],
+            "commands": [{
+                "command": "editor.action.commentLine",
+                "args": []
+            }]
+        }
+    ],
+    "window.zoomLevel": 0,
+    "typescript.check.tscVersion": false
+}
