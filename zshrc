@@ -26,13 +26,13 @@ BASE16_SHELL=$HOME/.dots/base16-shell/
 
 # antigen stuff
 if [[ ! -f ~/.antigen.zsh ]]; then
-  curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.1/bin/antigen.zsh > ~/.antigen.zsh
+  curl -L git.io/antigen > ~/.antigen.zsh
 fi
 source ~/.antigen.zsh
 
 #normal oh-my-zsh
-antigen use oh-my-zsh
-antigen theme pmcgee
+#antigen use oh-my-zsh
+#antigen theme candy
 
 # "highlighting on command line
 antigen bundle zsh-users/zsh-syntax-highlighting

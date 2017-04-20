@@ -1,5 +1,11 @@
 // Place your settings in this file to overwrite the default settings
+//installed plugins:
+//Material Theme
+//Vim
+//VSCode simpler Icons
+//vscode-icons
 {
+    "editor.fontFamily": "Fira Code, Monaco, 'Courier New', monospace",
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -48,5 +54,9 @@
         }
     ],
     "window.zoomLevel": 0,
-    "typescript.check.tscVersion": false
+    "typescript.check.tscVersion": false,
+    "workbench.colorTheme": "Material Theme",
+    "workbench.iconTheme": "vscode-simpler-icons",
+    "workbench.editor.enablePreview": false,
+    "vsicons.projectDetection.autoReload": true
 }
