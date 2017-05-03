@@ -26,13 +26,14 @@ BASE16_SHELL=$HOME/.dots/base16-shell/
 
 # antigen stuff
 if [[ ! -f ~/.antigen.zsh ]]; then
-  curl https://cdn.rawgit.com/zsh-users/antigen/v1.4.1/bin/antigen.zsh > ~/.antigen.zsh
+  curl -L git.io/antigen > ~/.antigen.zsh
 fi
 source ~/.antigen.zsh
 
 #normal oh-my-zsh
 #antigen use oh-my-zsh
 #antigen theme pmcgee
+#antigen theme candy
 
 # "highlighting on command line
 antigen bundle zsh-users/zsh-syntax-highlighting
@@ -90,3 +91,12 @@ alias ll="ll -G"
 alias vsc="open -a Visual\ Studio\ Code ."
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+
+# Create a JAVA_HOME variable, determined dynamically
+export JAVA_HOME=$(/usr/libexec/java_home)
+export ANDROID_HOME=$HOME/Android/Sdk
+# Add that to the global PATH variable
+export PATH=${JAVA_HOME}/bin:$PATH
+# Add the Android SDK to the PATH variable
+export PATH=${PATH}:~/Library/Android/sdk/tools:~/Library/Android/sdk/platform-tools

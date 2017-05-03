@@ -1,5 +1,11 @@
 // Place your settings in this file to overwrite the default settings
+//installed plugins:
+//Material Theme
+//Vim
+//VSCode simpler Icons
+//vscode-icons
 {
+    "editor.fontFamily": "Fira Code, Monaco, 'Courier New', monospace",
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -15,38 +21,66 @@
     "vim.useSystemClipboard": true,
     "vim.useCtrlKeys": true,
     "vim.hlsearch": true,
-    "vim.insertModeKeyBindings": [{
-        "before": ["j", "j"],
-        "after": ["<Esc>"]
-    }],
-    "vim.leader": ",",
-    "vim.otherModesKeyBindingsNonRecursive": [{
-            "before": ["leader", "leader"],
-            "after": [],
-            "commands": [{
-                "command": "workbench.action.files.save",
-                "args": []
-            }]
-        },
+    "vim.insertModeKeyBindings": [
         {
-            "before": ["leader", "q"],
+            "before": [
+                "j",
+                "j"
+            ],
+            "after": [
+                "<Esc>"
+            ]
+        }
+    ],
+    "vim.leader": ",",
+    "vim.otherModesKeyBindingsNonRecursive": [
+        {
+            "before": [
+                "leader",
+                "leader"
+            ],
             "after": [],
-            "commands": [{
-                    "command": "workbench.action.closeActiveEditor",
+            "commands": [
+                {
+                    "command": "workbench.action.files.save",
                     "args": []
                 }
-
             ]
         },
         {
-            "before": ["leader", "c", "i"],
+            "before": [
+                "leader",
+                "q"
+            ],
             "after": [],
-            "commands": [{
-                "command": "editor.action.commentLine",
-                "args": []
-            }]
+            "commands": [
+                {
+                    "command": "workbench.action.closeActiveEditor",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": [
+                "leader",
+                "c",
+                "i"
+            ],
+            "after": [],
+            "commands": [
+                {
+                    "command": "editor.action.commentLine",
+                    "args": []
+                }
+            ]
         }
     ],
     "window.zoomLevel": 0,
-    "typescript.check.tscVersion": false
+    "typescript.check.tscVersion": false,
+    "workbench.colorTheme": "Material Theme",
+    "workbench.iconTheme": "vscode-simpler-icons",
+    "workbench.editor.enablePreview": false,
+    "vsicons.projectDetection.autoReload": true,
+    "editor.fontSize": 14,
+    "editor.formatOnSave": true
 }
