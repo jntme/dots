@@ -31,8 +31,8 @@ fi
 source ~/.antigen.zsh
 
 #normal oh-my-zsh
-antigen use oh-my-zsh
-antigen theme pmcgee
+#antigen use oh-my-zsh
+#antigen theme pmcgee
 
 # "highlighting on command line
 antigen bundle zsh-users/zsh-syntax-highlighting
@@ -54,7 +54,6 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
   # ...
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   # Mac OSX
-  antigen bundle brew
   antigen bundle brew-cask
   antigen bundle gem
   antigen bundle osx
