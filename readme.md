@@ -3,7 +3,7 @@ At the moment this discrption out of date - you need to fiddle around a bit to g
 
 
 Usage
-=====
+-----
 
 If you use Ubuntu:
 
@@ -29,6 +29,7 @@ After that you should install the VIM Plugins. Open vim and enter:
 
 
 Additional stuff not in the scripts yet:
+----------------------------------------
 
 Cloning of the Tmux Module Manager
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
