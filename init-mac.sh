@@ -25,6 +25,9 @@ ln -s ~/.dots/zshrc ~/.zshrc
 ln -s ~/.dots/tmux.conf ~/.tmux.conf
 ln -s ~/.dots/vimrc ~/.config/nvim/init.vim
 
+curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
 
 
 echo "------------------------------"
