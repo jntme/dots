@@ -22,7 +22,7 @@ sudo update-alternatives --config editor
 #not needed because of upper config
 #git config --global core.editor "$(which nvim)"
 
-chsh -s /usr/local/bin/zsh
+chsh -s /usr/bin/zsh
 
 rm -rf ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~/.config/nvim/init.vim
 
@@ -31,3 +31,8 @@ mkdir -p ~/.config ~/.config/nvim
 ln -s ~/.dots/zshrc ~/.zshrc
 ln -s ~/.dots/tmux.conf ~/.tmux.conf
 ln -s ~/.dots/vimrc ~/.config/nvim/init.vim
+
+#set git config as well
+set config --global user.name "Jonathan Meier"
+set config --global user.email "mail@jntme.ch"
+
