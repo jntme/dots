@@ -8,6 +8,9 @@ curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 pip3 install neovim
 
+#make neovim to standard editor in nvim
+git config --global core.editor "$(which nvim)"
+
 brew tap caskroom/fonts
 brew cask install font-fira-code
 
