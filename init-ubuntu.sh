@@ -22,7 +22,8 @@ sudo update-alternatives --config editor
 #not needed because of upper config
 #git config --global core.editor "$(which nvim)"
 
-chsh -s /usr/bin/zsh
+#chsh -s /usr/bin/zsh
+chsh -s /bin/zsh
 
 rm -rf ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~/.config/nvim/init.vim
 

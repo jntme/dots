@@ -106,7 +106,6 @@ imap <right> <nop>
 
 
 call plug#begin('~/.local/share/nvim/plugged')
-Plug 'Shougo/denite.nvim' "makes vim behave like normal ui
 Plug 'Yggdroot/indentLine' "makes intendation possible
 Plug 'airblade/vim-gitgutter' "git gutter
 Plug 'vim-airline/vim-airline'

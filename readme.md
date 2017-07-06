@@ -1,4 +1,5 @@
-
+Attention! 
+At the moment this discrption out of date - you need to fiddle around a bit to git it to work, dependent on your OS.
 
 
 Usage
@@ -6,17 +7,33 @@ Usage
 
 If you use Ubuntu:
 
-```
+```bash
 ./init-ubuntu.sh
 
 ```
 
 If you use Mac OS X:
 
-```
+```bash
 ./init-mac.sh
 
 ```
+
+
+After that you should install the VIM Plugins. Open vim and enter:
+
+```
+:PlugInstall
+
+```
+
+
+Additional stuff not in the scripts yet:
+
+Cloning of the Tmux Module Manager
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+
 
 Comment
 -------
@@ -28,6 +45,7 @@ At the moment there are config files for the following tools:
 - zsh
 - neovim / vim
 - tmux
+- visual studio code
 
 -> if you use a different OS you're free to make pull request for it :)
 
