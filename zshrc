@@ -54,6 +54,10 @@ if [[ "$OSTYPE" == "darwin" ]]; then
   antigen bundle battery
 fi
 
+
+#add vi behaviour to zsh
+bindkey -v
+
 #aliases
 alias vim="nvim"
 alias cpwd="pwd | pbcopy"
