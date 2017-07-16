@@ -1,9 +1,8 @@
-Attention! 
-At the moment this discrption out of date - you need to fiddle around a bit to git it to work, dependent on your OS.
-
 
 Usage
 -----
+
+Don't forget to change your git credentials in the init file before starting a bash file!
 
 If you use Ubuntu:
 
@@ -27,13 +26,16 @@ After that you should install the VIM Plugins. Open vim and enter:
 
 ```
 
+Then you should install the TMUX Packet Manager (tpm) as the plugins:
 
-Additional stuff not in the scripts yet:
-----------------------------------------
+To do that, firstly open a new tmux session:
 
-Cloning of the Tmux Module Manager
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+tmux
 
+```
+
+Then press `Ctrl+I` (big I!)
 
 
 Comment
@@ -48,6 +50,4 @@ At the moment there are config files for the following tools:
 - tmux
 - visual studio code
 
--> if you use a different OS you're free to make pull request for it :)
-
-
+--> if you have any recommendations for improvements I'd love to get a pull request from you! :D
