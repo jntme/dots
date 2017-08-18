@@ -9,7 +9,7 @@ RPS1="%{$fg[magenta]%}%20<...<%~%<<%{$reset_color%}"
 
 # if tmux is installed, run it
 if [ "$TMUX" = "" ]; then
-  tmux attach
+  tmux -2 attach
 fi
 
 # auto cd into directory
