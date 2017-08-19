@@ -83,3 +83,5 @@ alias tti="tt in"
 alias tto="tt out"
 alias tts="tt sheet"
 alias ttl="tt list"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
