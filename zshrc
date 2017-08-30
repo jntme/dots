@@ -1,11 +1,16 @@
 
-autoload colors zsh/terminfo
-colors
+#autoload colors zsh/terminfo
+#colors
 
 # prompt
 precmd() { print "" }
 PS1="⟩ "
 RPS1="%{$fg[magenta]%}%20<...<%~%<<%{$reset_color%}"
+
+#make base16-shell work
+
+BASE16_SHELL=$HOME/.dots/base16-shell/
+[ -n "$PS1" ] && [ -s $BASE16_SHELL/profile_helper.sh ] && eval "$($BASE16_SHELL/profile_helper.sh)"
 
 # if tmux is installed, run it
 if [ "$TMUX" = "" ]; then
@@ -19,10 +24,6 @@ setopt auto_cd
 setopt correctall
 alias git status='nocorrect git status'
 
-#make base16-shell work
-
-BASE16_SHELL=$HOME/.dots/base16-shell/
-[ -n "$PS1" ] && [ -s $BASE16_SHELL/profile_helper.sh ] && eval "$($BASE16_SHELL/profile_helper.sh)"
 
 # antigen stuff
 if [[ ! -f ~/.antigen.zsh ]]; then
