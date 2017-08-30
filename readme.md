@@ -2,6 +2,17 @@
 Usage
 -----
 
+Clone and init of repo:
+
+```bash
+#cd to home dir first
+git clone https://github.com/jntme/dots.git .dots
+
+git submodule init
+git submodule update
+```
+
+
 Don't forget to change your git credentials in the init file before starting a bash file!
 
 If you use Ubuntu:
