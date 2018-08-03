@@ -48,6 +48,14 @@ tmux
 
 Then press `Ctrl+I` (big I!)
 
+To get the base16 look you need to type:
+
+```
+zsh
+base16_eighties
+
+```
+
 
 Comment
 -------
