@@ -114,7 +114,7 @@ Plug 'ctrlpvim/ctrlp.vim', { 'on': 'CtrlP' } "fuzzy finder
 Plug 'mhinz/vim-grepper' "find in files
 Plug 'Shougo/vimfiler.vim', { 'on': 'VimFiler' } "file tree view
 "Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'w0rp/ale' "async linting
+"Plug 'w0rp/ale' "async linting
 Plug 'justinmk/vim-sneak' "sneaking in code
 Plug 'chriskempson/base16-vim' "colors in vim
 Plug 'christoomey/vim-tmux-navigator' "tmux integration
