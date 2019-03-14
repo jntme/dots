@@ -16,7 +16,7 @@ brew cask install font-fira-code
 
 chsh -s /usr/local/bin/zsh
 
-rm -rf ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~/.config/nvim/init.vim
+rm -rf ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~/.config/nvim/init.vim ~/.ideavimrc
 
 mkdir -p ~/.config ~/.config/nvim
 
@@ -24,7 +24,7 @@ mkdir -p ~/.config ~/.config/nvim
 ln -s ~/.dots/zshrc ~/.zshrc
 ln -s ~/.dots/tmux.conf ~/.tmux.conf
 ln -s ~/.dots/vimrc ~/.config/nvim/init.vim
-ln -s ~/.dots/ideavim ~/.ideavim
+ln -s ~/.dots/ideavim ~/.ideavimrc
 
 curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
