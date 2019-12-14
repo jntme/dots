@@ -11,7 +11,7 @@ pip3 install neovim
 #make neovim to standard editor in nvim
 git config --global core.editor "$(which nvim)"
 
-brew tap caskroom/fonts
+brew tap homebrew/cask-fonts
 brew cask install font-fira-code
 
 chsh -s /usr/local/bin/zsh
