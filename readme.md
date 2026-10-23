@@ -7,6 +7,7 @@ Clone and init of repo:
 ```bash
 #cd to home dir first
 git clone https://github.com/jntme/dots.git .dots
+cd .dots
 
 git submodule init
 git submodule update
@@ -15,14 +16,14 @@ git submodule update
 
 Don't forget to change your git credentials in the init file before starting a bash file!
 
-If you use Ubuntu:
+If you use Ubuntu / Debian:
 
 ```bash
-./init-ubuntu.sh
+./init-linux.sh
 
 ```
 
-If you use Mac OS X:
+If you use macOS:
 
 ```bash
 ./init-mac.sh
@@ -46,7 +47,7 @@ tmux
 
 ```
 
-Then press `Ctrl+I` (big I!)
+Then press `Ctrl+b` followed by `I` (big I!)
 
 To get the base16 look you need to type:
 
@@ -60,7 +61,7 @@ base16_eighties
 Comment
 -------
 
-These scripts basically install NeoVIM and zsh and link the configuration files to your home directory, where the different tools can find them. On Mac it adds curl, tmux and iterm2 because these are not installed per default.
+These scripts basically install NeoVIM and zsh and link the configuration files to your home directory, where the different tools can find them. On Mac it also installs tmux, curl and the Fira Code font via Homebrew. iTerm2 is not installed automatically; its settings are in `com.googlecode.iterm2.plist`.
 
 At the moment there are config files for the following tools:
 
