@@ -1,0 +1,41 @@
+# Reference for ~/.ssh/config on the laptop (back it up before editing).
+# Replace <address> (IP or name of the Mac mini) and <user> (same account name
+# as on the laptop: the scripts expect identical paths on both machines).
+
+Host mini
+    HostName <address>
+    User <user>
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+    UseKeychain yes
+    AddKeysToAgent yes
+    # Needed if a "Host *" further down sets another agent (e.g. 1Password)
+    IdentityAgent SSH_AUTH_SOCK
+    ControlMaster auto            # one connection, many sessions (fast status polling)
+    ControlPath ~/.ssh/cm-%r@%h:%p
+    ControlPersist 10m
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+
+# Admin account, used by mini-unlock to check whether the mini is up (optional)
+Host mini-admin
+    HostName <address>
+    User <admin-user>
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+    IdentityAgent SSH_AUTH_SOCK
+
+# FileVault unlock after a restart (mini-unlock): password only, no key
+Host mini-unlock
+    HostName <address>
+    User <admin-user>
+    PubkeyAuthentication no
+    PreferredAuthentications password,keyboard-interactive
+    ConnectTimeout 5
+
+# Same key for GitHub; again only needed with another agent in "Host *"
+Host github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+    IdentityAgent SSH_AUTH_SOCK

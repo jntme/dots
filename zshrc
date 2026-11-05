@@ -13,8 +13,9 @@ BASE16_SHELL="$HOME/.dots/base16-shell/"
     [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
         eval "$("$BASE16_SHELL/profile_helper.sh")"
 
-# if tmux is installed, run it (attach to the last session or start a new one)
-if command -v tmux >/dev/null && [ -z "$TMUX" ]; then
+# if tmux is installed, run it (attach to the last session or start a new one);
+# not via SSH (e.g. `mini`, splits onto the Claude server)
+if command -v tmux >/dev/null && [ -z "$TMUX" ] && [ -z "$SSH_CONNECTION" ]; then
   tmux -2 attach 2>/dev/null || tmux -2 new-session
 fi
 
@@ -92,3 +93,96 @@ alias tts="tt sheet"
 alias ttl="tt list"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# --- Claude Code setup (~/Claude/claude-tmux-setup, ANLEITUNG.md) ---
+# Claude servers (Mac minis), see ~/.dots/tmux/claude-hosts. This machine is
+# one if it starts the anchor tmux (LaunchAgent, ANLEITUNG.md).
+_claude_servers=(${(f)"$(awk '!/^#/ && NF { print $1 }' ~/.dots/tmux/claude-hosts 2>/dev/null)"})
+# _claude_server = its name in claude-hosts (by name or hostname), empty on the laptop.
+_claude_server=
+if [[ -f ~/Library/LaunchAgents/local.claude-tmux.plist ]]; then
+  _claude_server=$(awk -v h="${HOST%%.*}" '!/^#/ && NF && ($1 == h || $3 == h) { print $1; exit }' ~/.dots/tmux/claude-hosts)
+  : ${_claude_server:=mini}
+fi
+
+# ⚙ in the prompt on a Claude server or via SSH, pink like the server's tabs
+[[ -n $_claude_server || -n $SSH_CONNECTION ]] && PS1="%F{magenta}⚙%f $PS1"
+
+# Claude Code: runs on a Claude server for projects that live there (.claude-host
+# in the project or ~/.config/claude-remote/projects), otherwise locally.
+# `claude @mini …` / `claude --local …` choose the place.
+# On a server itself, `claude` in a project attaches to (or starts) the
+# project's session in the anchor tmux, the same one the laptop connects to;
+# `claude --here …` runs a separate one in the current shell.
+claude() {
+  local where= project root
+  if [[ -n $_claude_server ]]; then
+    IFS=$'\t' read -r project root < <(~/.dots/tmux/claude-project.sh "$PWD")
+    if [[ $1 == --here || $root == $HOME ]] || ! tmux -L claude run-shell true 2>/dev/null; then
+      [[ $1 == --here ]] && shift
+      command claude "$@"
+    else
+      TMUX= tmux -L claude new-session -A -s "$project" -c "$PWD" "claude --remote-control ${(q)project} ${(j: :)${(q)@}}"
+    fi
+    return
+  fi
+  case $1 in
+    @*) where=${1#@}; shift ;;
+    --local) where=local; shift ;;
+  esac
+  [[ -n $where ]] || where=$(~/.dots/tmux/claude-remote.sh where "$PWD" | cut -f1)
+  if [[ $where == local ]]; then
+    command claude "$@"
+  else
+    CLAUDE_REMOTE_HOST=$where ~/.dots/tmux/claude-remote.sh run "$PWD" "$@"
+  fi
+}
+alias claude-move='~/.dots/tmux/claude-move'
+
+# SSH to a Claude server: `mini`. In a project that lives there (see
+# claude above) it opens a shell in the same folder; with arguments it is plain ssh.
+_claude_server_ssh() {
+  local host=$1 where
+  shift
+  where=$(~/.dots/tmux/claude-remote.sh where "$PWD" | cut -f1)
+  if [[ $# -eq 0 && $where == $host ]]; then
+    ssh -t "$host" "cd ${(q)PWD} 2>/dev/null || echo '${PWD/#$HOME/~} does not exist on $host'; exec \$SHELL -l"
+  else
+    ssh "$host" "$@"
+  fi
+}
+
+# Entering a project that lives on the mini: the local folder is (nearly)
+# empty, so point to the remote side once per project
+_claude_remote_hint() {
+  local where project
+  IFS=$'\t' read -r where _ < <(~/.dots/tmux/claude-remote.sh where "$PWD")
+  [[ $where == local ]] && { _claude_remote_hint_for=; return }
+  project=$(~/.dots/tmux/claude-project.sh "$PWD" | cut -f1)
+  [[ $project == $_claude_remote_hint_for ]] && return
+  _claude_remote_hint_for=$project
+  print -P "%F{5}⚙ $project lives on $where%f – \"claude\" connects to its session, \"$where\" opens a shell there"
+}
+[[ -n $_claude_server ]] || { autoload -U add-zsh-hook; add-zsh-hook chpwd _claude_remote_hint }
+
+# Unlock a Claude server (FileVault) via SSH after a restart, then wait until it is up.
+# Uses the SSH hosts <server>-unlock and <server>-admin.
+_claude_server_unlock() {
+  local host=$1
+  echo "Waiting for $host (port 22) …"
+  until nc -z -G 2 "$(ssh -G $host-unlock | awk '/^hostname /{print $2}')" 22 2>/dev/null; do sleep 3; done
+  if ssh -o BatchMode=yes -o ConnectTimeout=3 $host-admin true 2>/dev/null; then
+    echo "$host is not locked."; ssh $host-admin 'fdesetup status'; return 0
+  fi
+  ssh $host-unlock
+  echo "Unlocked – waiting for the system to start …"
+  until ssh -o BatchMode=yes -o ConnectTimeout=3 $host-admin true 2>/dev/null; do sleep 5; done
+  ssh $host-admin 'fdesetup status'
+}
+
+# Per server: <server> (shell), <server>-admin, <server>-unlock
+for _h in $_claude_servers; do
+  eval "$_h() { _claude_server_ssh $_h \"\$@\" }; $_h-unlock() { _claude_server_unlock $_h }; alias $_h-admin='ssh $_h-admin'"
+done
+unset _h
+# --- end Claude Code setup ---

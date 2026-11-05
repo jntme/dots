@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+# Moves the project of the current folder between the laptop and the Claude
+# servers (Mac minis, see claude-hosts), with its Claude history.
+#   claude-move             to the project's default server (claude-hosts)
+#   claude-move <server>    to that server, also from another server
+#   claude-move local       back to the laptop (also: --back)
+#   claude-move --backups   list the local backups of moved projects
+#
+# A copy is verified before its source is removed. The local content goes to a
+# backup outside ~/dev; the folder keeps a .claude-host file, so `cd` still
+# works and `claude` connects to the server. Between two servers the data goes
+# through the laptop, they need not reach each other.
+
+set -uo pipefail
+CONF=~/.config/claude-remote
+BACKUPS="$HOME/Library/Application Support/claude-remote/backups"
+REMOTE=~/.dots/tmux/claude-remote.sh
+PENDING="$CONF/pending"   # "<folder> <server>" of copies to a server not yet finished
+# rsync gets its own SSH connection: through the shared one (ControlMaster) a
+# large copy blocks every other ssh to the server until it is done
+RSYNC=(rsync -e "ssh -o ControlPath=none")
+[ -x /opt/homebrew/bin/rsync ] && RSYNC=(/opt/homebrew/bin/rsync --info=progress2 -e "ssh -o ControlPath=none")
+
+die() { echo "⚠ $*" >&2; exit 1; }
+ask() { local a; read -r -p "$1 [Y/n] " a; [[ -z $a || $a == [Yy]* ]]; }
+q() { printf %q "$1"; }
+
+# Claude keeps its history per start folder, with every other character as "-"
+history_dir() { printf '%s/.claude/projects/%s' "$HOME" "$(printf %s "$1" | sed 's/[^a-zA-Z0-9]/-/g')"; }
+
+# "<files> <bytes> <git HEAD>" of a folder, the same command runs on both sides
+FINGERPRINT='cd "$1" && printf "%s %s %s\n" "$(find . -type f | wc -l | tr -d " ")" "$(find . -type f -print0 | xargs -0 stat -f %z | awk "{ s += \$1 } END { print s + 0 }")" "$(git rev-parse HEAD 2>/dev/null || echo -)"'
+fingerprint_local() { bash -c "$FINGERPRINT" _ "$1"; }
+fingerprint_remote() { ssh -n "$1" "bash -c $(q "$FINGERPRINT") _ $(q "$2")"; }
+
+# Was a copy of this folder to the server interrupted? Then it may be resumed.
+is_pending() { [ -f "$PENDING" ] && grep -qxF "$root $1" "$PENDING"; }
+
+remove_from_projects() {
+  [ -f "$CONF/projects" ] || return 0
+  awk -v a="$1" -v b="~${1#"$HOME"}" '$1 != a && $1 != b' "$CONF/projects" >"$CONF/projects.tmp"
+  mv "$CONF/projects.tmp" "$CONF/projects"
+}
+
+# Server -> laptop. The server copy goes to a backup there.
+to_local() {
+  local host=$1 marker stamp
+  "${RSYNC[@]}" -a "$host:$root/" "$root/" || die "Copy aborted. Run again, rsync resumes."
+  ssh -n "$host" "test -d $(q "$history")" && { mkdir -p "$history"; "${RSYNC[@]}" -a "$host:$history/" "$history/"; }
+  marker=$(mktemp)
+  mv "$root/.claude-host" "$marker"
+  if [ "$(fingerprint_local "$root")" != "$(fingerprint_remote "$host" "$root")" ]; then
+    mv "$marker" "$root/.claude-host"
+    die "Verification failed, everything stays on $host."
+  fi
+  rm "$marker"
+
+  stamp=$(date +%Y-%m-%d-%H%M%S)
+  ssh -n "$host" "mkdir -p $(q "$BACKUPS") && mv $(q "$root") $(q "$BACKUPS/$project-$stamp")"
+  remove_from_projects "$root"
+  echo "✓ $project is off $host. Backup there: $BACKUPS/$project-$stamp"
+}
+
+# Laptop -> server. The local content goes to a local backup.
+to_server() {
+  local host=$1 backup
+  ssh -n "$host" "mkdir -p $(q "$root")"
+  mkdir -p "$CONF"
+  is_pending "$host" || echo "$root $host" >>"$PENDING"
+  # --delete: a resumed copy drops what was deleted locally in the meantime
+  "${RSYNC[@]}" -a --delete "$root/" "$host:$root/" || die "Copy to $host aborted. Run claude-move $host again, rsync resumes."
+  if [ -d "$history" ]; then
+    ssh -n "$host" "mkdir -p $(q "$history")"
+    "${RSYNC[@]}" -a "$history/" "$host:$history/" || die "Claude history not copied to $host."
+  fi
+  [ "$(fingerprint_local "$root")" = "$(fingerprint_remote "$host" "$root")" ] || die "Verification on $host failed."
+  echo "✓ Copied to $host and verified ($(fingerprint_local "$root" | cut -d' ' -f1) files)"
+  awk -v l="$root $host" '$0 != l' "$PENDING" >"$PENDING.tmp" && mv "$PENDING.tmp" "$PENDING"
+
+  backup="$BACKUPS/$project-$(date +%Y-%m-%d-%H%M%S)"
+  mkdir -p "$backup"
+  find "$root" -mindepth 1 -maxdepth 1 -exec mv {} "$backup"/ \;
+  printf 'host=%s\npath=%s\nmoved=%s\nbackup=%s\n' "$host" "$root" "$(date +%Y-%m-%dT%H:%M)" "$backup" >"$root/.claude-host"
+  mkdir -p "$CONF"
+  echo "~${root#"$HOME"} $host" >>"$CONF/projects"
+  echo "✓ $project now lives on $host. Local backup: $backup"
+}
+
+case ${1:-} in
+  --backups)
+    if ls "$BACKUPS"/* >/dev/null 2>&1; then
+      du -sh "$BACKUPS"/*
+      echo "Delete: rm -rf \"$BACKUPS/<name>\""
+    else
+      echo "No backups."
+    fi
+    exit 0 ;;
+  --back) target=local ;;
+  "") target=$($REMOTE default "$PWD") ;;
+  -*) echo "Usage: claude-move [$($REMOTE hosts | paste -sd '|' -)|local] | --backups" >&2; exit 2 ;;
+  *) target=$1 ;;
+esac
+[ "$target" = local ] || $REMOTE hosts | grep -qxF "$target" ||
+  die "Unknown server $target. Known: $($REMOTE hosts | paste -sd ' ' -) (claude-hosts)"
+
+IFS=$'\t' read -r project root < <(~/.dots/tmux/claude-project.sh "$PWD")
+[ "$root" != "$HOME" ] || die "The home folder is not moved."
+history=$(history_dir "$root")
+source=local
+if [ -f "$root/.claude-host" ]; then
+  source=$(sed -n 's/^host=//p' "$root/.claude-host" | head -1)
+  source=${source:-mini}
+fi
+[ "$source" != "$target" ] || die "$project already lives $([ "$target" = local ] && echo locally || echo "on $target")."
+
+for host in "$source" "$target"; do
+  [ "$host" = local ] || ssh -n -o BatchMode=yes -o ConnectTimeout=5 "$host" true 2>/dev/null || die "$host is not reachable."
+done
+
+if [ "$source" = local ]; then
+  # No Claude session of this project may be running locally (it would keep writing)
+  running=$(jq -r --arg r "$root" 'select(.cwd == $r or (.cwd | startswith($r + "/"))) | .pid' ~/.claude/sessions/*.json 2>/dev/null |
+    while read -r pid; do kill -0 "$pid" 2>/dev/null && echo "$pid"; done)
+  [ -z "$running" ] || die "Claude is still running locally in $project (PID $running). End it first."
+  need=$(du -sk "$root" | cut -f1)
+  size=$(du -sh "$root" | cut -f1)
+else
+  ssh -n "$source" "tmux -L claude has-session -t '=$project' 2>/dev/null" &&
+    die "Session $project is still running on $source. End it there first (/exit)."
+  need=$(ssh -n "$source" "du -sk $(q "$root") | cut -f1")
+  size=$(ssh -n "$source" "du -sh $(q "$root") | cut -f1")
+fi
+
+if [ "$target" != local ]; then
+  if is_pending "$target"; then
+    echo "Resuming the interrupted copy to $target."
+  else
+    ssh -n "$target" "test -e $(q "$root") && [ -n \"\$(ls -A $(q "$root"))\" ]" && die "$root already exists on $target."
+  fi
+  free=$(ssh -n "$target" "df -k ~ | awk 'NR == 2 { print \$4 }'")
+  [ "$free" -gt $((need * 2)) ] || die "Not enough space on $target."
+fi
+
+ask "Move $root ($size) from $source to $target?" || exit 1
+[ "$source" = local ] || to_local "$source"
+[ "$target" = local ] && exit 0
+to_server "$target"
+
+args=()
+[ -d "$history" ] && args=(--continue)
+ask "Start Claude on $target${args[*]:+ (with --continue)}?" || exit 0
+CLAUDE_REMOTE_HOST=$target exec "$REMOTE" run "$PWD" ${args[@]+"${args[@]}"}

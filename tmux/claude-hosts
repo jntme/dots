@@ -1,0 +1,7 @@
+# Claude server (Mac mini): name = SSH host alias, folder = projects below it
+# move there by default (claude-move without target), hostname = the machine's
+# own name if it differs (the server finds itself by it, e.g. for its prompt).
+# Projects outside the folder default to this server too.
+# No server: comment the line out, everything runs locally.
+# name  folder            hostname
+mini    ~/Claude          joni-mini

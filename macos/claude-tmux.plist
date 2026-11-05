@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Claude server (Mac mini) only: starts the anchor tmux (tmux -L claude) in
+     the graphical session, so Claude sessions can use the keychain. Install with
+     sed "s|__HOME__|$HOME|g" ~/.dots/macos/claude-tmux.plist > ~/Library/LaunchAgents/local.claude-tmux.plist
+     launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/local.claude-tmux.plist -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>local.claude-tmux</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/tmux</string><string>-L</string><string>claude</string>
+    <string>-f</string><string>__HOME__/.dots/tmux/server.conf</string>
+    <string>start-server</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict><key>PATH</key><string>__HOME__/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/bin:/bin:/usr/sbin:/sbin</string></dict>
+  <key>RunAtLoad</key><true/>
+  <key>AbandonProcessGroup</key><true/>
+  <key>LimitLoadToSessionType</key><string>Aqua</string>
+</dict>
+</plist>

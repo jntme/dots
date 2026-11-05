@@ -1,0 +1,11 @@
+{
+  "name": "Dark ANSI soft",
+  "base": "dark-ansi",
+  "overrides": {
+    "userMessageBackground": "rgb(55, 55, 55)",
+    "userMessageBackgroundHover": "rgb(70, 70, 70)",
+    "composerSidebarBackground": "rgb(38, 38, 38)",
+    "memoryBackgroundColor": "rgb(55, 65, 70)",
+    "bashMessageBackgroundColor": "rgb(65, 60, 65)"
+  }
+}
