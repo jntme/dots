@@ -165,6 +165,12 @@ prompt_terraform() {}
 # `claude --here …` runs a separate one in the current shell.
 claude() {
   local where= project root
+  # Subcommands and info flags (claude mcp add …, claude auth status, claude
+  # --version) run directly here instead of opening a session
+  case $1 in
+    mcp|auth|config|doctor|update|upgrade|install|plugin|plugins|setup-token|-v|--version|-h|--help)
+      command claude "$@"; return ;;
+  esac
   if [[ -n $_claude_server ]]; then
     IFS=$'\t' read -r project root < <(~/.dots/tmux/claude-project.sh "$PWD")
     if [[ $1 == --here || $root == $HOME ]] || ! tmux -L claude run-shell true 2>/dev/null; then
