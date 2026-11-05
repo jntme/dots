@@ -4,8 +4,10 @@
 
 # prompt
 precmd() { print "" }
-PS1="⟩ "
-RPS1="%F{magenta}%20<...<%~%<<%f"
+# agnoster (powerline segments: path, git), loaded with antigen below;
+# the old minimal prompt was:
+#PS1="⟩ "
+#RPS1="%F{magenta}%20<...<%~%<<%f"
 
 # Base16 Shell
 BASE16_SHELL="$HOME/.dots/base16-shell/"
@@ -41,6 +43,7 @@ source ~/.antigen.zsh
 #antigen use oh-my-zsh
 #antigen theme pmcgee
 #antigen theme candy
+antigen theme agnoster
 
 # "autosuggestions on command line
 antigen bundle zsh-users/zsh-autosuggestions
@@ -66,10 +69,48 @@ fpath=(~/.grok/completions/zsh $fpath)
 
 # loads the bundles and runs compinit
 antigen apply
+setopt promptsubst
+
+# agnoster's git segment took ~150 ms per prompt (vcs_info, several git calls);
+# the same output from a single git status: branch, ↱ ahead / ↰ behind / ⇅ both,
+# ± unstaged, ✚ staged, <B> bisect, >M< merge, >R> rebase
+prompt_git() {
+  local st line head oid ab staged unstaged dirty mode git_dir branch_char
+  st=$(command git status --porcelain=v2 --branch 2>/dev/null) || return
+  for line in ${(f)st}; do
+    case $line in
+      '# branch.head '*) head=${line#\# branch.head } ;;
+      '# branch.oid '*) oid=${line#\# branch.oid } ;;
+      '# branch.ab '*) ab=${line#\# branch.ab } ;;
+      [12u]' '*) dirty=1; [[ $line[3] != . ]] && staged='✚'; [[ $line[4] != . ]] && unstaged='±' ;;
+      '? '*) dirty=1 ;;
+    esac
+  done
+  () { local LC_ALL="" LC_CTYPE="en_US.UTF-8"; branch_char=$''; }
+  case $ab in
+    '+0 -0' | '') ;;
+    '+0 '*) branch_char=$'↰' ;;
+    *' -0') branch_char=$'↱' ;;
+    *) branch_char=$'⇅' ;;
+  esac
+  git_dir=$(command git rev-parse --git-dir 2>/dev/null)
+  if [[ -e $git_dir/BISECT_LOG ]]; then mode=" <B>"
+  elif [[ -e $git_dir/MERGE_HEAD ]]; then mode=" >M<"
+  elif [[ -e $git_dir/rebase || -e $git_dir/rebase-apply || -e $git_dir/rebase-merge ]]; then mode=" >R>"
+  fi
+  if [[ -n $dirty ]]; then
+    prompt_segment "$AGNOSTER_GIT_DIRTY_BG" "$AGNOSTER_GIT_DIRTY_FG"
+  else
+    prompt_segment "$AGNOSTER_GIT_CLEAN_BG" "$AGNOSTER_GIT_CLEAN_FG"
+  fi
+  if [[ $head == '(detached)' ]]; then head="➦ ${oid[1,7]}"; else head="$branch_char $head"; fi
+  local flags=$unstaged$staged
+  echo -n "${head:gs/%/%%}${flags:+ $flags}${mode}"
+}
 
 
 #add vi behaviour to zsh
-#bindkey -v
+bindkey -v
 
 #aliases
 alias vim="nvim"
@@ -108,8 +149,11 @@ if [[ -f ~/Library/LaunchAgents/local.claude-tmux.plist ]]; then
   : ${_claude_server:=mini}
 fi
 
-# ⚙ in the prompt on a Claude server or via SSH, pink like the server's tabs
-[[ -n $_claude_server || -n $SSH_CONNECTION ]] && PS1="%F{magenta}⚙%f $PS1"
+# agnoster's context segment: only ⚙ on a Claude server or via SSH, pink like
+# the server's tabs (instead of user@host everywhere)
+prompt_context() {
+  [[ -n $_claude_server || -n $SSH_CONNECTION ]] && prompt_segment magenta black "⚙"
+}
 
 # Claude Code: runs on a Claude server for projects that live there (.claude-host
 # in the project or ~/.config/claude-remote/projects), otherwise locally.

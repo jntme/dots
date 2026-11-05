@@ -92,7 +92,7 @@ Needs tmux >= 3.8, plus `fzf`, `jq` and `terminal-notifier` from Homebrew.
 - Claude plan usage (as `/usage`) on the right of the status bar.
 - Sessions survive a restart (tmux-resurrect + continuum, saved every 15 min);
   Claude panes resume their conversation.
-- The themepack (gray) stays; the Claude parts are added after `run tpm`.
+- Look: gray status bar at the top (project | windows … ✋ list, usage, time) and the agnoster prompt (path, git status), both from Moritz' setup; the tmux-themepack is gone. Needs a font with Powerline glyphs or iTerm's "Use built-in Powerline glyphs".
 
 **Keys**
 
