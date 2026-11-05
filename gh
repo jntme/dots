@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Opens the github page for a repo/branch in your browser.
 #
@@ -42,5 +42,5 @@ then
     giturl="${giturl}/tree/${branch}"
 fi
 
-open $giturl
+open "$giturl"
 exit 0

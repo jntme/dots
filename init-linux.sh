@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #install zshell
-sudo apt-get install zsh
+sudo apt-get install zsh tmux git curl
 
 #install neovim
 sudo apt-get install software-properties-common
 
-sudo apt-get install python-dev python-pip python3-dev python3-pip
+sudo apt-get install python3-dev python3-pip
 
 sudo add-apt-repository ppa:neovim-ppa/stable
 sudo apt-get update
@@ -24,6 +24,8 @@ sudo update-alternatives --config editor
 
 #chsh -s /usr/bin/zsh
 chsh -s /bin/zsh
+
+git -C ~/.dots submodule update --init
 
 rm -rf ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~/.config/nvim/init.vim
 

@@ -5,7 +5,7 @@
 # prompt
 precmd() { print "" }
 PS1="⟩ "
-RPS1="%{$fg[magenta]%}%20<...<%~%<<%{$reset_color%}"
+RPS1="%F{magenta}%20<...<%~%<<%f"
 
 # Base16 Shell
 BASE16_SHELL="$HOME/.dots/base16-shell/"
@@ -13,9 +13,9 @@ BASE16_SHELL="$HOME/.dots/base16-shell/"
     [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
         eval "$("$BASE16_SHELL/profile_helper.sh")"
 
-# if tmux is installed, run it
-if [ "$TMUX" = "" ]; then
-  tmux -2 attach
+# if tmux is installed, run it (attach to the last session or start a new one)
+if command -v tmux >/dev/null && [ -z "$TMUX" ]; then
+  tmux -2 attach 2>/dev/null || tmux -2 new-session
 fi
 
 # auto cd into directory
@@ -23,7 +23,7 @@ setopt auto_cd
 
 # do spellchecking
 setopt correctall
-alias git status='nocorrect git status'
+alias git='nocorrect git'
 
 
 # antigen stuff
@@ -42,23 +42,30 @@ antigen bundle zsh-users/zsh-autosuggestions
 
 # "git shorthand
 antigen bundle git
-antigen bundle vi-mode
 antigen bundle rupa/z
 antigen bundle olivierverdier/zsh-git-prompt
 
 
 
-if [[ "$OSTYPE" == "darwin" ]]; then
+if [[ "$OSTYPE" == darwin* ]]; then
   # Mac OSX
-  antigen bundle brew-cask
   antigen bundle gem
-  antigen bundle osx
+  antigen bundle macos
   antigen bundle battery
 fi
 
+# >>> grok installer >>>
+export PATH="$HOME/.grok/bin:$PATH"
+fpath=(~/.grok/completions/zsh $fpath)
+# <<< grok installer <<<
+export PATH="$HOME/.local/bin:$PATH"
+
+# loads the bundles and runs compinit
+antigen apply
+
 
 #add vi behaviour to zsh
-bindkey -v
+#bindkey -v
 
 #aliases
 alias vim="nvim"
@@ -66,15 +73,13 @@ alias cpwd="pwd | pbcopy"
 
 alias grep='grep --color=auto'
 
-alias study="cd '/Users/jnt/Dropbox/01-Berner Fachhochschule/05-Fruhlingssemester 2017'";
-
 alias slp="pmset sleepnow"
 
 #reload zsh config
 alias reload!='source ~/.zshrc'
 
 alias ls="ls -G"
-alias ll="ll -G"
+alias ll="ls -lG"
 
 alias vsc="open -a Visual\ Studio\ Code ."
 

@@ -33,7 +33,7 @@
         }
     ],
     "vim.leader": ",",
-    "vim.otherModesKeyBindingsNonRecursive": [
+    "vim.normalModeKeyBindingsNonRecursive": [
         {
             "before": [
                 "leader",
@@ -76,7 +76,6 @@
         }
     ],
     "window.zoomLevel": 0,
-    "typescript.check.tscVersion": false,
     "workbench.colorTheme": "Material Theme",
     "workbench.iconTheme": "vscode-simpler-icons",
     "workbench.editor.enablePreview": false,

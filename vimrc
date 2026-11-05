@@ -1,4 +1,7 @@
 
+"set Leader (must come before any <leader> mapping)
+let mapleader=","
+
 " Set standard file encoding
 set encoding=utf8
 
@@ -45,19 +48,11 @@ nnoremap <C-y> 3<C-y>
 set noswapfile
 
 "move around in a help file with a german keyboard
-nnoremap ä <C-]> 
-nnoremap ü <C-O> 
-
-if has('mouse')
-  set mouse=a
-endif
-
-"set Leader
-let mapleader=","
+nnoremap ä <C-]>
+nnoremap ü <C-O>
 
 "no mouse
 set mouse=r
-let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 
 "save on <Leader><Leader>
 nnoremap <Leader><Leader> :w<CR>
@@ -66,7 +61,7 @@ nnoremap <Leader><Leader> :w<CR>
 inoremap jj <esc>
 
 "disable Ex mode
-noremap Q <NOP>"
+noremap Q <NOP>
 
 nmap <leader>q :q<cr>
 "quit current window
@@ -91,7 +86,7 @@ map <silent> <C-l> :wincmd l<cr>
 
 "------------set to my own config----------------
 "
-"nnoremap <Left> :vertical resize -1<CR>
+nnoremap <Left> :vertical resize -1<CR>
 nnoremap <Right> :vertical resize +1<CR>
 nnoremap <Up> :resize -1<CR>
 nnoremap <Down> :resize +1<CR>

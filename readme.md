@@ -8,9 +8,7 @@ Clone and init of repo:
 #cd to home dir first
 git clone https://github.com/jntme/dots.git .dots
 cd .dots
-
-git submodule init
-git submodule update
+git submodule update --init
 ```
 
 
@@ -47,7 +45,7 @@ tmux
 
 ```
 
-Then press `Ctrl+b` followed by `I` (big I!)
+Then press the prefix followed by a capital I: `Ctrl+b`, then `Shift+i`
 
 To get the base16 look you need to type:
 
