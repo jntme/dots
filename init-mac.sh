@@ -1,6 +1,6 @@
 #!/bin/bash
 
-brew install zsh tmux neovim the_silver_searcher curl
+brew install zsh tmux neovim the_silver_searcher curl fzf jq terminal-notifier lazygit
 brew install --cask font-fira-code
 #brew install --cask iterm2
 

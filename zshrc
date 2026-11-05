@@ -97,9 +97,9 @@ alias ttl="tt list"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# --- Claude Code setup (~/Claude/claude-tmux-setup, ANLEITUNG.md) ---
+# --- Claude Code setup (see readme.md, "Claude Code with tmux") ---
 # Claude servers (Mac minis), see ~/.dots/tmux/claude-hosts. This machine is
-# one if it starts the anchor tmux (LaunchAgent, ANLEITUNG.md).
+# one if it starts the anchor tmux (LaunchAgent macos/claude-tmux.plist).
 _claude_servers=(${(f)"$(awk '!/^#/ && NF { print $1 }' ~/.dots/tmux/claude-hosts 2>/dev/null)"})
 # _claude_server = its name in claude-hosts (by name or hostname), empty on the laptop.
 _claude_server=
@@ -188,4 +188,7 @@ for _h in $_claude_servers; do
   eval "$_h() { _claude_server_ssh $_h \"\$@\" }; $_h-unlock() { _claude_server_unlock $_h }; alias $_h-admin='ssh $_h-admin'"
 done
 unset _h
+
+# Ping the Mac mini (address from the SSH host alias `mini`); args go to ping, e.g. `pingmm -c 3`
+pingmm() { ping "$@" "$(ssh -G mini | awk '/^hostname /{print $2}')" }
 # --- end Claude Code setup ---
