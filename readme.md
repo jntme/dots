@@ -102,6 +102,8 @@ Needs tmux >= 3.8, plus `fzf`, `jq` and `terminal-notifier` from Homebrew.
 | `Ctrl+Tab` | Toggle to the previous project (iTerm key mapping: Ctrl+Tab → escape sequence `[27;5;9~`) |
 | prefix `Space` | Jump to the next Claude session waiting for you (✋), then finished ones (✓) |
 | prefix `?` | Menu with all shortcuts |
+| `Ctrl+Y` | Scratch Claude in a popup; Ctrl+Y again hides it, the conversation stays |
+| `Ctrl+G` | lazygit in the current folder (`q` closes it) |
 | prefix `\|` / `_` | Split in the same folder; in a window on the Mac mini (pink tab) a shell there |
 | prefix `\` / `-` | Split full height / without path (always local), as before |
 | `Ctrl+V` | In a pink window: paste a clipboard image into the Claude on the mini |

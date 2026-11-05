@@ -13,6 +13,10 @@ BASE16_SHELL="$HOME/.dots/base16-shell/"
     [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
         eval "$("$BASE16_SHELL/profile_helper.sh")"
 
+# Before starting tmux: the tmux server keeps this PATH, and its popups
+# (Ctrl+Y) start claude from ~/.local/bin
+export PATH="$HOME/.local/bin:$PATH"
+
 # if tmux is installed, run it (attach to the last session or start a new one);
 # not via SSH (e.g. `mini`, splits onto the Claude server)
 if command -v tmux >/dev/null && [ -z "$TMUX" ] && [ -z "$SSH_CONNECTION" ]; then
@@ -59,7 +63,6 @@ fi
 export PATH="$HOME/.grok/bin:$PATH"
 fpath=(~/.grok/completions/zsh $fpath)
 # <<< grok installer <<<
-export PATH="$HOME/.local/bin:$PATH"
 
 # loads the bundles and runs compinit
 antigen apply
