@@ -154,6 +154,8 @@ fi
 prompt_context() {
   [[ -n $_claude_server || -n $SSH_CONNECTION ]] && prompt_segment magenta black "⚙"
 }
+# newer agnoster versions call tf_prompt_info from the terraform plugin (not loaded)
+prompt_terraform() {}
 
 # Claude Code: runs on a Claude server for projects that live there (.claude-host
 # in the project or ~/.config/claude-remote/projects), otherwise locally.
