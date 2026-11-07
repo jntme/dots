@@ -20,11 +20,11 @@ PROJECT_ROOTS=(~/Claude)
 rows() {
   local windows current f
   current=$(tmux display -p '#{E:@project-name}')
-  # "<project> <host> <state> <remote control> <title>" of fresh server caches
+  # "<project> <host> <state> <remote control> <title> <folder>" of fresh server caches
   export REMOTE
   REMOTE=$(for f in ~/.cache/claude-remote/sessions-*; do
     [ -f "$f" ] && [ $(( $(date +%s) - $(stat -f %m "$f") )) -lt 30 ] &&
-      awk -F '\t' -v h="${f##*/sessions-}" '{ print $1 "\t" h "\t" $2 "\t" $3 "\t" $4 }' "$f"
+      awk -F '\t' -v h="${f##*/sessions-}" '{ print $1 "\t" h "\t" $2 "\t" $3 "\t" $4 "\t" $5 }' "$f"
   done)
   windows=$(tmux list-windows -a -F '#{window_id}	#{session_name}	#{@claude_state}	#{pane_current_command}	#{pane_title}	#{E:@project-name}	#{?#{@claude_rc},1,}	#{window_active}	#{?#{@visited},#{@visited},0}	#{@claude_host}	#{@claude_title}' |
     awk -F '\t' -v all="$1" -v cur="$current" '
@@ -65,7 +65,7 @@ rows() {
         # open projects come via the environment (awk -v cannot hold newlines)
         n = split(ENVIRON["OPEN"], o, "\n"); for (i = 1; i <= n; i++) isopen[o[i]] = 1
         n = split(ENVIRON["REMOTE"], r, "\n")
-        for (i = 1; i <= n; i++) if (split(r[i], f, "\t") >= 3) { rhost[f[1]] = f[2]; rstate[f[1]] = f[3]; rrc[f[1]] = (f[4] == 1) ? 1 : ""; rtitle[f[1]] = f[5] }
+        for (i = 1; i <= n; i++) if (split(r[i], f, "\t") >= 3) { rhost[f[1]] = f[2]; rstate[f[1]] = f[3]; rrc[f[1]] = (f[4] == 1) ? 1 : ""; rtitle[f[1]] = f[5]; rdir[f[1]] = f[6] }
         # z database (path|rank|time) -> frecency score per path
         while ((getline line < z) > 0) {
           split(line, f, "|"); age = now - f[3]
@@ -75,6 +75,7 @@ rows() {
       {
         dir = $0; sub(/\/$/, "", dir)
         name = dir; sub(/.*\//, "", name); sub(/^\./, "", name); gsub(/[.:]/, "_", name)  # as claude-project.sh
+        seen[name] = 1
         if (name in isopen) next
         s = 0   # a folder also counts its subfolders
         for (q in score) if (q == dir || index(q, dir "/") == 1) s += score[q]
@@ -85,6 +86,15 @@ rows() {
           next
         }
         printf "%f\tdir:%s\t%s\tdir\t\t%s\t\t%s\t\t0\n", s, dir, name, short, name
+      }
+      # Server sessions without a project folder of that name (e.g. an agent in a
+      # subfolder, claude-project.sh): listed with the folder they run in
+      END {
+        for (name in rhost) {
+          if ((name in seen) || (name in isopen) || name ~ /^_/ || rdir[name] == "") continue
+          t = rtitle[name]; sub(/^[^ ]+ /, "", t)
+          printf "%f\tdir:%s\t%s\tsrv\t%s\t%s\t%s\t%s\t%s\t0\n", 1e9, rdir[name], name, rstate[name], t, rrc[name], name, rhost[name]
+        }
       }' | sort -s -t $'\t' -k1,1 -g -r | cut -f2-
 }
 
@@ -101,7 +111,7 @@ list() {
       return s sprintf("%" (n - width(s)) "s", "")
     }
     {
-      name = fit($7, 22)
+      name = fit($7, 34)
       hc = "\033[35m"
       if ($3 == "dir") {
         printf "%s\t%s\t\033[2m○ %s               %s\033[0m\n", $1, $2, name, $5

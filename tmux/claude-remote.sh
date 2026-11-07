@@ -126,13 +126,13 @@ run() {
   return $rc
 }
 
-# One line per server session: "<tmux session> <state> <remote control 0/1> <title>".
+# One line per server session: "<tmux session> <state> <remote control 0/1> <title> <folder>".
 # Claude keeps ~/.claude/sessions/<pid>.json, with bridgeSessionId while
 # Remote Control is connected; the session's pane runs claude directly.
-POLL='tmux -L claude list-panes -a -F "#{session_name}	#{pane_pid}	#{?#{@claude_state},#{@claude_state},idle}	#{pane_title}" 2>/dev/null |
-  while IFS="	" read -r session pid state title; do
+POLL='tmux -L claude list-panes -a -F "#{session_name}	#{pane_pid}	#{?#{@claude_state},#{@claude_state},idle}	#{pane_title}	#{pane_current_path}" 2>/dev/null |
+  while IFS="	" read -r session pid state title dir; do
     rc=$(jq -r "if .bridgeSessionId then 1 else 0 end" ~/.claude/sessions/$pid.json 2>/dev/null)
-    printf "%s\t%s\t%s\t%s\n" "$session" "$state" "${rc:-0}" "$title"
+    printf "%s\t%s\t%s\t%s\t%s\n" "$session" "$state" "${rc:-0}" "$title" "$dir"
   done'
 
 poll() {

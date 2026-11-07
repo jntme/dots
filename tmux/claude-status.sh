@@ -73,7 +73,7 @@ while IFS=$'\t' read -r window host project old_state old_rc seen session old_ti
 
   state=- rc=0 title=
   if [ "$age" -lt 30 ]; then   # older = server unreachable: show no state
-    IFS=$'\t' read -r _ state rc title < <(awk -F '\t' -v p="$project" '$1 == p' "$cache")
+    IFS=$'\t' read -r _ state rc title _ < <(awk -F '\t' -v p="$project" '$1 == p' "$cache")
     state=${state:--} rc=${rc:-0}
   fi
   # "done" counts as seen once you looked at the window, as for local sessions
