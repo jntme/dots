@@ -3,6 +3,9 @@
 #   ~/dev/work/shop/backend -> shop        (first level below a project root)
 #   other git repos               -> name of the repo root
 #   anything else                 -> name of the folder itself; ~ -> home
+# A subfolder with its own CLAUDE.md (e.g. an agent: shop/agents/tm) is a
+# project of its own, "<project>-<folder>" (shop-tm), so `claude` there gets
+# its own session; the root stays the project's (for .claude-host).
 # Usage: claude-project.sh <dir>
 
 PROJECT_ROOTS=(~/Claude)
@@ -19,5 +22,14 @@ done
 
 # tmux session names cannot contain "." or ":"; a leading dot is dropped
 # (.dots -> dots) because names starting with "_" mark hidden sessions
-if [ "$root" = "$HOME" ]; then name=home; else name=$(basename "$root"); name=$(printf '%s' "${name#.}" | tr '.:' '__'); fi
+if [ "$root" = "$HOME" ]; then name=home; else name=$(basename "$root"); name=${name#.}; fi
+
+# nearest folder with its own CLAUDE.md between dir and the root
+sub=$dir
+while [ "$sub" != "$root" ] && [ "${sub#"$root"/}" != "$sub" ]; do
+  if [ -f "$sub/CLAUDE.md" ]; then name="$name-$(basename "$sub")"; break; fi
+  sub=${sub%/*}
+done
+
+name=$(printf '%s' "$name" | tr '.:' '__')
 printf '%s\t%s\n' "$name" "$root"

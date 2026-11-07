@@ -2,7 +2,8 @@
 # Moves the window of a Claude Code pane into the tmux session of its project
 # (one session per project), creating the session if needed. Clients that are
 # looking at the window follow it. Called from claude-hook.sh on SessionStart.
-# Usage: claude-autosort.sh <pane id> <folder Claude was started in>
+# Usage: claude-autosort.sh <pane id> <folder Claude was started in> [project]
+# (project: name decided elsewhere, e.g. by the server for a remote session)
 #
 # Set CLAUDE_TMUX_AUTOSORT=0 to disable (e.g. on a server whose tmux is
 # managed by the remote wrapper).
@@ -12,6 +13,7 @@ pane=$1
 dir=$2
 
 IFS=$'\t' read -r project root < <(~/.dots/tmux/claude-project.sh "$dir")
+[ -n "$3" ] && project=$3
 tmux set -p -t "$pane" @claude_project "$project"
 
 IFS=$'\t' read -r session window panes < <(tmux display -p -t "$pane" '#{session_name}	#{window_id}	#{window_panes}')

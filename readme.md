@@ -84,7 +84,9 @@ Needs tmux >= 3.8, plus `fzf`, `jq` and `terminal-notifier` from Homebrew.
 - One tmux session per project: starting `claude` in a folder moves its window
   into the session of its project. Projects are the folders below `~/Claude`
   (`PROJECT_ROOTS` in `tmux/claude-project.sh` and `tmux/claude-switcher.sh`),
-  elsewhere the git root.
+  elsewhere the git root. A subfolder with its own `CLAUDE.md` (e.g. an agent
+  in `agents/tm`) is a project of its own (`<project>-tm`): `claude` there
+  opens that agent's own session.
 - Claude's state in the window name: ⠋ working, ✋ waiting for you, ✓ done
   (until you look at it), ✻ Claude runs here, 📡 Remote Control. Waiting
   sessions are also listed on the right of the status bar, and a macOS

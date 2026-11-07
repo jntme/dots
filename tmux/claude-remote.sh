@@ -75,7 +75,7 @@ run() {
     return 1
   fi
   state=$(ssh -n -o BatchMode=yes -o ConnectTimeout=5 "$HOST" \
-    "tmux -L claude run-shell true 2>/dev/null && echo anker; test -d $(printf %q "$dir") && echo ordner; test -f ~/.claude/.credentials.json && echo datei" 2>/dev/null)
+    "tmux -L claude run-shell true 2>/dev/null && echo anker; test -d $(printf %q "$dir") && echo ordner; test -f ~/.claude/.credentials.json && echo datei; ~/.dots/tmux/claude-project.sh $(printf %q "$dir") | sed -n '1s/\t.*//; 1s/^/projekt=/p'" 2>/dev/null)
   if [ $? -ne 0 ] && [ -z "$state" ]; then
     echo "⚠ SSH login to $HOST failed. After a restart run $HOST-unlock first." >&2
     return 1
@@ -94,12 +94,16 @@ run() {
     return 1
   fi
 
+  # The server decides the name: a subfolder with its own CLAUDE.md (agent) is
+  # its own session there, and the local folder may be empty (claude-move)
+  [[ $state =~ projekt=([^$'\n']+) ]] && project=${BASH_REMATCH[1]}
+
   # Two levels of quoting: the remote shell runs tmux, tmux runs the command
   inner=$(printf '%q ' claude --remote-control "$project" "$@")
   remote=$(printf '%q ' tmux -L claude new-session -A -s "$project" -c "$dir" "$inner")
 
   if [ -n "$TMUX" ]; then
-    ~/.dots/tmux/claude-autosort.sh "$TMUX_PANE" "$dir"
+    ~/.dots/tmux/claude-autosort.sh "$TMUX_PANE" "$dir" "$project"
     # Window options, so the tab shows the server session whichever pane is active.
     # By window id: once the pane is closed, its id no longer finds the window.
     window=$(tmux display -p -t "$TMUX_PANE" '#{window_id}')
