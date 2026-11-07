@@ -145,9 +145,9 @@ again.
 | `tmux/claude-hooks.json` | Claude Code hooks, merged into `~/.claude/settings.json` |
 | `tmux/claude-hosts` | The Claude server; comment it out to keep everything local |
 | `tmux/server.conf` | The invisible tmux on the mini |
-| `claude/` | Claude theme for base16 colours (`dark-ansi-soft`), skill `mac-mini-remote`, example settings |
+| `claude/` | Claude theme for base16 colours (`dark-ansi-soft`), skills `mac-mini-remote` and `dots-publish` (commit, check for private content, push, roll out to the mini), example settings |
 | `macos/` | LaunchAgent for the mini, `~/.ssh/config` template |
 
 Claude Code settings (`~/.claude/settings.json`): the hooks from
 `tmux/claude-hooks.json`, `"tui": "fullscreen"`, `"theme": "custom:dark-ansi-soft"`
-(theme linked to `~/.claude/themes/`, skill to `~/.claude/skills/`).
+(theme linked to `~/.claude/themes/`, skills linked to `~/.claude/skills/`).
