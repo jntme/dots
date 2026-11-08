@@ -46,11 +46,9 @@ ungepushten Commit, den Commit korrigieren, bevor gepusht wird.
 
 ## 3. Pushen
 
-Claude darf nicht selbst pushen (Berechtigung verweigert). Den Benutzer bitten, auszuführen:
-
-```
-! git -C ~/.dots push origin master
-```
+Wenn der Benutzer pushen will und die Prüfung sauber ist: `git -C ~/.dots push origin master`.
+Wird das verweigert, den Benutzer bitten, es selbst auszuführen (im Eingabefeld zuerst `!` tippen,
+dann den Befehl, oder in einem normalen Terminal).
 
 Remote ist HTTPS (`gh auth setup-git`). Bei «non-fast-forward»: `git -C ~/.dots fetch` und
 `git rebase origin/master`, Konflikte mit dem Benutzer klären, nie `--force`.
