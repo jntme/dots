@@ -163,6 +163,8 @@ prompt_terraform() {}
 # On a server itself, `claude` in a project attaches to (or starts) the
 # project's session in the anchor tmux, the same one the laptop connects to;
 # `claude --here …` runs a separate one in the current shell.
+# `claude --new [topic]` starts an additional session for the same folder
+# (<project>-<n>[-topic]), on the server it lives on, with Remote Control.
 claude() {
   local where= project root
   # Subcommands and info flags (claude mcp add …, claude auth status, claude
@@ -171,8 +173,14 @@ claude() {
     mcp|auth|config|doctor|update|upgrade|install|plugin|plugins|setup-token|-v|--version|-h|--help)
       command claude "$@"; return ;;
   esac
+  local new= topic=
+  if [[ $1 == --new ]]; then
+    new=1; shift
+    [[ -n $1 && $1 != -* ]] && { topic=$1; shift }
+  fi
   if [[ -n $_claude_server ]]; then
     IFS=$'\t' read -r project root < <(~/.dots/tmux/claude-project.sh "$PWD")
+    [[ -n $new ]] && project=$(~/.dots/tmux/claude-remote.sh new-name "$project" "$topic" "$(tmux -L claude ls -F '#S' 2>/dev/null)")
     if [[ $1 == --here || $root == $HOME ]] || ! tmux -L claude run-shell true 2>/dev/null; then
       [[ $1 == --here ]] && shift
       command claude "$@"
@@ -189,10 +197,13 @@ claude() {
   if [[ $where == local ]]; then
     command claude "$@"
   else
-    CLAUDE_REMOTE_HOST=$where ~/.dots/tmux/claude-remote.sh run "$PWD" "$@"
+    CLAUDE_REMOTE_HOST=$where CLAUDE_NEW=$new CLAUDE_NEW_TOPIC=$topic ~/.dots/tmux/claude-remote.sh run "$PWD" "$@"
   fi
 }
 alias claude-move='~/.dots/tmux/claude-move'
+# Personal shortcuts (outside the repo), e.g.
+#   alias newagent='(cd ~/Claude/shop/agents/tm && claude --new)'
+[[ -f ~/.config/claude-remote/aliases.zsh ]] && source ~/.config/claude-remote/aliases.zsh
 
 # SSH to a Claude server: `mini`. In a project that lives there (see
 # claude above) it opens a shell in the same folder; with arguments it is plain ssh.

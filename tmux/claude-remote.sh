@@ -5,6 +5,8 @@
 #   claude-remote.sh default <dir>        -> server the project moves to by default
 #   claude-remote.sh hosts                -> names of all servers
 #   claude-remote.sh run <dir> [args...]  -> start or attach the server session
+#                                            (CLAUDE_NEW=1 [CLAUDE_NEW_TOPIC=x]: an additional
+#                                            session <project>-<n>[-x] for the same folder)
 #   claude-remote.sh poll                 -> refresh ~/.cache/claude-remote/sessions-<host>
 #                                            (called in the background by claude-status.sh)
 # The server is $CLAUDE_REMOTE_HOST (default mini).
@@ -64,8 +66,17 @@ unmark() {
   tmux set -pu -t "$TMUX_PANE" @claude_project 2>/dev/null
 }
 
+# Next free name for an additional session: <project>-<n>[-<topic>], n from 2.
+# Usage: new_session_name <project> <topic> <existing session names, one per line>
+new_session_name() {
+  local n=2 topic
+  topic=$(printf '%s' "$2" | iconv -f utf-8 -t ascii//TRANSLIT 2>/dev/null | tr -cs 'A-Za-z0-9' '-' | sed 's/^-//; s/-$//' | cut -c1-20)
+  while grep -qE "^$1-$n(-|\$)" <<<"$3"; do n=$((n + 1)); done
+  printf '%s\n' "$1-$n${topic:+-$topic}"
+}
+
 run() {
-  local dir=$1 project root addr state inner remote rc window
+  local dir=$1 project root addr state inner remote rc window session
   shift
   IFS=$'\t' read -r project root < <(~/.dots/tmux/claude-project.sh "$dir")
   addr=$(ssh -G "$HOST" | awk '/^hostname /{ print $2 }')
@@ -75,7 +86,7 @@ run() {
     return 1
   fi
   state=$(ssh -n -o BatchMode=yes -o ConnectTimeout=5 "$HOST" \
-    "tmux -L claude run-shell true 2>/dev/null && echo anker; test -d $(printf %q "$dir") && echo ordner; test -f ~/.claude/.credentials.json && echo datei; ~/.dots/tmux/claude-project.sh $(printf %q "$dir") | sed -n '1s/\t.*//; 1s/^/projekt=/p'" 2>/dev/null)
+    "tmux -L claude run-shell true 2>/dev/null && echo anker; test -d $(printf %q "$dir") && echo ordner; test -f ~/.claude/.credentials.json && echo datei; ~/.dots/tmux/claude-project.sh $(printf %q "$dir") | sed -n '1s/\t.*//; 1s/^/projekt=/p'; tmux -L claude ls -F 's=#S' 2>/dev/null" 2>/dev/null)
   if [ $? -ne 0 ] && [ -z "$state" ]; then
     echo "⚠ SSH login to $HOST failed. After a restart run $HOST-unlock first." >&2
     return 1
@@ -97,17 +108,21 @@ run() {
   # The server decides the name: a subfolder with its own CLAUDE.md (agent) is
   # its own session there, and the local folder may be empty (claude-move)
   [[ $state =~ projekt=([^$'\n']+) ]] && project=${BASH_REMATCH[1]}
+  session=$project
+  if [ -n "$CLAUDE_NEW" ]; then
+    session=$(new_session_name "$project" "$CLAUDE_NEW_TOPIC" "$(sed -n 's/^s=//p' <<<"$state")")
+  fi
 
   # Two levels of quoting: the remote shell runs tmux, tmux runs the command
-  inner=$(printf '%q ' claude --remote-control "$project" "$@")
-  remote=$(printf '%q ' tmux -L claude new-session -A -s "$project" -c "$dir" "$inner")
+  inner=$(printf '%q ' claude --remote-control "$session" "$@")
+  remote=$(printf '%q ' tmux -L claude new-session -A -s "$session" -c "$dir" "$inner")
 
   if [ -n "$TMUX" ]; then
     ~/.dots/tmux/claude-autosort.sh "$TMUX_PANE" "$dir" "$project"
     # Window options, so the tab shows the server session whichever pane is active.
     # By window id: once the pane is closed, its id no longer finds the window.
     window=$(tmux display -p -t "$TMUX_PANE" '#{window_id}')
-    tmux set -w -t "$window" @claude_host "$HOST" \; set -w -t "$window" @claude_remote_session "$project"
+    tmux set -w -t "$window" @claude_host "$HOST" \; set -w -t "$window" @claude_remote_session "$session"
   fi
   # In the background with an explicit stdin (it stays the terminal): a trap
   # only interrupts `wait`, not a foreground command. Closing the pane (Ctrl+W)
@@ -153,6 +168,7 @@ case $cmd in
   default) default "$@" ;;
   hosts) hosts ;;
   run) run "$@" ;;
+  new-name) new_session_name "$@" ;;
   poll) poll ;;
   *) echo "Usage: claude-remote.sh where <dir> | default <dir> | hosts | run <dir> [args...] | poll" >&2; exit 2 ;;
 esac
