@@ -108,6 +108,8 @@ run() {
   # The server decides the name: a subfolder with its own CLAUDE.md (agent) is
   # its own session there, and the local folder may be empty (claude-move)
   [[ $state =~ projekt=([^$'\n']+) ]] && project=${BASH_REMATCH[1]}
+  # A given server session (claude-attach-remote.sh), e.g. a second one of the project
+  [ -n "$CLAUDE_REMOTE_SESSION" ] && project=$CLAUDE_REMOTE_SESSION
   session=$project
   if [ -n "$CLAUDE_NEW" ]; then
     session=$(new_session_name "$project" "$CLAUDE_NEW_TOPIC" "$(sed -n 's/^s=//p' <<<"$state")")

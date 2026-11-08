@@ -2,8 +2,8 @@
 # Ctrl+Space project switcher (runs inside a tmux popup).
 # Lists one line per project (the window that needs you most, "+N" = more
 # windows; Ctrl+A shows all windows), followed by project folders that have no
-# session yet. Enter jumps there (creating the session if needed), Ctrl+X
-# closes the selected window.
+# session yet. Enter jumps there (creating the session if needed; a session on
+# a server gets connected, claude-attach-remote.sh), Ctrl+X closes the selected window.
 
 PROJECT_ROOTS=(~/Claude)
 
@@ -99,7 +99,9 @@ rows() {
 }
 
 # Formats rows into aligned, colored lines. Runs byte-wise (LC_ALL=C) and
-# measures width by skipping UTF-8 continuation bytes, so umlauts align.
+# measures width by skipping UTF-8 continuation bytes, so umlauts align. The
+# name column fits the longest name (20-50 characters). After the shown line
+# come hidden fields for Enter: kind, host, project.
 list() {
   rows "$1" | LC_ALL=C awk -F '\t' -v cur="$(tmux display -p '#{E:@project-name}')" '
     function width(s,  t) { t = s; gsub(/[\200-\277]/, "", t); return length(t) }
@@ -110,28 +112,33 @@ list() {
       }
       return s sprintf("%" (n - width(s)) "s", "")
     }
-    {
-      name = fit($7, 34)
+    function show(f,   name, hc, st, claude, rc, mark, more) {
+      name = fit(f[7], nw)
       hc = "\033[35m"
-      if ($3 == "dir") {
-        printf "%s\t%s\t\033[2m○ %s               %s\033[0m\n", $1, $2, name, $5
-        next
+      if (f[3] == "dir") {
+        printf "%s\t%s\t\033[2m○ %s               %s\033[0m\tdir\t\t%s\n", f[1], f[2], name, f[5], f[7]
+        return
       }
       # ✻ = Claude Code runs here, state as colored word, 📡 = Remote Control on
-      if      ($4 == "working") st = "\033[34marbeitet\033[0m"
-      else if ($4 == "waiting") st = "\033[33;1mwartet  \033[0m"
-      else if ($4 == "done")    st = "\033[32mfertig  \033[0m"
-      else if ($4 == "idle")    st = "bereit  "
-      else if ($4 == "remote")  st = sprintf("%s%-8s\033[0m", hc, $8)
-      else                      st = "        "
+      if      (f[4] == "working") st = "\033[34marbeitet\033[0m"
+      else if (f[4] == "waiting") st = "\033[33;1mwartet  \033[0m"
+      else if (f[4] == "done")    st = "\033[32mfertig  \033[0m"
+      else if (f[4] == "idle")    st = "bereit  "
+      else if (f[4] == "remote")  st = sprintf("%s%-8s\033[0m", hc, f[8])
+      else                        st = "        "
       # coloured ✻ = runs on a Claude server, like its tab (pink)
-      claude = ($8 != "") ? hc "✻\033[0m" : ($4 != "") ? "\033[38;5;173m✻\033[0m" : " "
-      rc = ($6 != "") ? "📡" : "  "
-      mark = ($7 == cur) ? "\033[1m●\033[0m" : "●"
-      more = ($9 > 0) ? sprintf("  \033[2m+%d\033[0m", $9) : ""
+      claude = (f[8] != "") ? hc "✻\033[0m" : (f[4] != "") ? "\033[38;5;173m✻\033[0m" : " "
+      rc = (f[6] != "") ? "📡" : "  "
+      mark = (f[7] == cur) ? "\033[1m●\033[0m" : "●"
+      more = (f[9] > 0) ? sprintf("  \033[2m+%d\033[0m", f[9]) : ""
       # srv = the session runs on a server, but no window here is connected to it
-      if ($3 == "srv") more = more sprintf("  %s⇢ %s, nicht verbunden\033[0m", hc, $8)
-      printf "%s\t%s\t%s %s %s %s %s %s%s\n", $1, $2, mark, name, claude, st, rc, $5, more
+      if (f[3] == "srv") more = more sprintf("  %s⇢ %s, nicht verbunden\033[0m", hc, f[8])
+      printf "%s\t%s\t%s %s %s %s %s %s%s\t%s\t%s\t%s\n", f[1], f[2], mark, name, claude, st, rc, f[5], more, f[3], f[8], f[7]
+    }
+    { line[++n] = $0; if (width($7) > nw) nw = width($7) }
+    END {
+      nw = (nw < 20) ? 20 : (nw > 50) ? 50 : nw
+      for (i = 1; i <= n; i++) { split(line[i], f, "\t"); show(f) }
     }'
 }
 
@@ -151,8 +158,14 @@ sel=$(list | fzf --ansi --sync --reverse --exact --tiebreak=begin,index --delimi
   --bind="ctrl-a:transform:case \$FZF_PROMPT in Alle*) echo 'change-prompt(Projekt > )+reload($0 --list)';; *) echo 'change-prompt(Alle Fenster > )+reload($0 --list all)';; esac" \
   --bind="ctrl-x:execute-silent(case {1} in @*) [ {1} != \"\$(tmux display -p '#{window_id}')\" ] && tmux kill-window -t {1};; esac)+reload:case \$FZF_PROMPT in Alle*) $0 --list all;; *) $0 --list;; esac") || exit 0
 
-target=$(cut -f1 <<<"$sel")
-session=$(cut -f2 <<<"$sel")
+IFS=$'\t' read -r target session _ kind host project <<<"$sel"
+
+# A session on a server that no window here is connected to: connect it (the
+# window of the row, if it only runs a shell, else a new one)
+if [ "$kind" = srv ]; then
+  case $target in @*) window=$target ;; *) window= ;; esac
+  exec ~/.dots/tmux/claude-attach-remote.sh "" "$host" "$project" "$window"
+fi
 
 case $target in
   dir:*)
